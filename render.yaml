@@ -2,6 +2,7 @@ services:
   - type: web
     name: careflow
     runtime: node
+    plan: free
     region: singapore
     buildCommand: npm install
     startCommand: npm start
