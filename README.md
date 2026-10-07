@@ -35,6 +35,7 @@ Session cookies are HttpOnly, SameSite=Lax, and stored in MongoDB. Mutating brow
 | `POST` | `/api/auth/accept-invitation` | Public one time invitation (`token`, `password`) |
 | `POST` | `/api/super-admin/hospital-invitations` | Super Admin; creates hospital and Hospital Admin invitation |
 | `GET` | `/api/super-admin/hospitals` | Super Admin facility summaries |
+| `GET` | `/api/super-admin/hospital-admins` | Super Admin; registered hospital admin accounts |
 | `GET` | `/api/super-admin/overview` | Super Admin district summaries |
 | `POST` | `/api/hospital/staff-invitations` | Hospital Admin; invite a doctor, nurse, or receptionist |
 | `GET` | `/api/hospital/staff` | Hospital Admin, own facility |
@@ -52,10 +53,14 @@ Session cookies are HttpOnly, SameSite=Lax, and stored in MongoDB. Mutating brow
 | `GET` | `/api/hospitals` and `/api/hospitals/:hospitalId/providers` | Public active facility/provider discovery |
 | `GET` | `/api/health` | Public service and database health |
 
-Queue estimates use the number of people ahead and the doctor's recorded average consultation time (12 minutes until enough visits are completed). Queue tokens are allocated transactionally.
+Queue estimates use the number of people ahead and the doctor's recorded average consultation time (12 minutes until enough visits are completed). Queue tokens are allocated transactionally. The patient dashboard reads appointments and live queue estimates from the API and refreshes them every 30 seconds while the dashboard is open.
+
+The patient dashboard also includes an optional Hindi voice queue assistant. Patients can request a spoken ETA or opt into an alert when they are within a selected 5, 10, or 15 minute threshold, and a spoken notice when staff call their turn. Speech uses the browser's built-in speech synthesis on the patient's device; it is not a generative AI model, requires the page to remain open, and may depend on Hindi voice support in the browser. Voice preference is stored in that browser's local storage. Use headphones in shared spaces. Wait times are estimates and can change as the queue moves.
 
 ## Current frontend scope
 
-The CareFlow landing page now has separate Patient and Admin & Staff login buttons, patient self-registration, invitation acceptance, and a live hospital directory. Those account flows call the API. Dashboard charts, appointment tables, and staff lists are still sample data saved in browser local storage; dashboard operations are not yet connected to MongoDB and should not be used to manage real patients.
+The CareFlow landing page has separate Patient and Admin & Staff login buttons, patient self-registration, invitation acceptance, and a live hospital directory. Patient appointments, provider booking requests, check-in and cancellation; doctor appointment review and consultation actions; hospital queue and dashboard views; and Super Admin facility and administrator views now use the API and MongoDB. Dashboard data refreshes every 30 seconds while the user is signed in. Hospital Admin and reception walk-ins create database queue records, and Super Admin/Hospital Admin invitation forms create single-use invitations.
+
+Render and Atlas still need their production environment variables and a successful `/api/health` response before this local code can be considered live. Do not open `index.html` as a `file://` page; use the Render service or run the Express server locally so same-origin API and session cookies work. Do not enter real patient information until production connection, frontend operations, security/privacy review, backups, and operational procedures are verified.
 
 No email/SMS delivery, ABHA integration, document upload, medical record storage, or clinical decision support is included. This starter is not a healthcare compliance certification. Do not enter real patient information until frontend integration, security/privacy review, backups, and operational procedures are in place.

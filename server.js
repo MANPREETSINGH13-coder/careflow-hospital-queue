@@ -341,6 +341,17 @@ app.get('/api/super-admin/hospitals', requireAuth, allowRoles('super_admin'), as
   } catch (error) { next(error); }
 });
 
+app.get('/api/super-admin/hospital-admins', requireAuth, allowRoles('super_admin'), async (_req, res, next) => {
+  try {
+    const admins = await collections.users.find({ role: 'hospital_admin' }, { projection: { passwordHash: 0 } }).sort({ fullName: 1 }).toArray();
+    const result = await Promise.all(admins.map(async admin => {
+      const hospital = admin.hospitalId ? await collections.hospitals.findOne({ _id: admin.hospitalId }, { projection: { name: 1 } }) : null;
+      return { ...safeUser(admin), hospitalName: hospital?.name || null, active: admin.active };
+    }));
+    res.json({ hospitalAdmins: result });
+  } catch (error) { next(error); }
+});
+
 app.get('/api/hospital/departments', requireAuth, requireHospital, allowRoles('hospital_admin', 'doctor', 'nurse', 'reception'), async (req, res, next) => {
   try {
     const departments = await collections.departments.find({ hospitalId: req.user.hospitalId }).sort({ name: 1 }).toArray();
@@ -539,7 +550,7 @@ app.get('/api/hospital/queue', requireAuth, requireHospital, allowRoles('hospita
       const patient = await collections.patientProfiles.findOne({ _id: a.patientProfileId });
       const doctor = await collections.users.findOne({ _id: a.doctorId }, { projection: { fullName: 1 } });
       const department = await collections.departments.findOne({ _id: a.departmentId }, { projection: { name: 1 } });
-      return { id: String(a._id), token: a.tokenLabel, tokenNumber: a.tokenNumber, appointmentStatus: a.appointmentStatus, queueStatus: a.queueStatus, slotAt: a.slotAt, priority: a.priority, patientName: patient?.fullName, phone: patient?.phone || null, department: department?.name, doctor: doctor?.fullName };
+      return { id: String(a._id), hospitalId: String(a.hospitalId), departmentId: String(a.departmentId), doctorId: String(a.doctorId), token: a.tokenLabel, tokenNumber: a.tokenNumber, appointmentStatus: a.appointmentStatus, queueStatus: a.queueStatus, slotAt: a.slotAt, priority: a.priority, patientName: patient?.fullName, phone: patient?.phone || null, department: department?.name, doctor: doctor?.fullName };
     }));
     res.json({ queue });
   } catch (error) { next(error); }
