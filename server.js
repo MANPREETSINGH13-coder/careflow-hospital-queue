@@ -164,7 +164,7 @@ async function allocateToken(hospitalId, departmentId, slotAt, session) {
     { upsert: true, returnDocument: 'after', session }
   );
   const number = counter.lastNumber;
-  return { day, number, label: `${department.code}-${String(number).padStart(3, '0')}` };
+  return { day, number, label: `Q-${String(number).padStart(3, '0')}` };
 }
 
 function patientView(appointment, patient, hospital, department, doctor, peopleAhead = 0, averageSeconds = 720) {
