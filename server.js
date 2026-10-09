@@ -215,10 +215,14 @@ app.post('/api/auth/login', loginAttempts, async (req, res, next) => {
   try {
     const email = emailOf(req.body.email);
     const password = req.body.password;
+    const portal = req.body.portal;
+    if (!['patient', 'admin'].includes(portal)) throw fail(400, 'Choose Patient login or Admin & staff login.');
     if (!emailOK(email) || typeof password !== 'string' || password.length > 128) throw fail(400, 'Enter your email and password.');
     const user = await collections.users.findOne({ email, active: true });
     const valid = user ? await passwordMatches(password, user.passwordHash) : false;
     if (!valid) return res.status(401).json({ error: 'Email or password is incorrect.' });
+    if (portal === 'patient' && user.role !== 'patient') throw fail(403, 'This is the Patient login. Please use Admin & staff login for this account.');
+    if (portal === 'admin' && user.role === 'patient') throw fail(403, 'This is a patient account. Please use Patient login.');
     const expanded = await loadUser(String(user._id));
     req.session.regenerate(error => {
       if (error) return next(error);
