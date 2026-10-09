@@ -53,6 +53,39 @@ body{background:radial-gradient(ellipse at 15% 8%,#e7f0e6 0,transparent 34%),#f4
 .public-auth .primary,.public-auth button[type=submit],.public-actions .primary{background:#176b57!important;border-color:#176b57!important;color:#fff!important;box-shadow:0 8px 20px #176b5726!important}
 .public-auth .primary:hover,.public-auth button[type=submit]:hover,.public-actions .primary:hover{background:#105541!important;border-color:#105541!important}
 input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,input:-webkit-autofill:active,input:autofill{ -webkit-box-shadow:0 0 0 1000px #f3f8ef inset!important;box-shadow:0 0 0 1000px #f3f8ef inset!important;-webkit-text-fill-color:#183a30!important;caret-color:#183a30!important }
+html,body{max-width:100%;overflow-x:hidden}
+@media(max-width:640px){
+  .public-screen,.public-header,.public-wrap,.public-hero,.public-hero>div:first-child{min-width:0;max-width:100%;width:100%}
+  .public-header{min-height:68px;padding:11px 14px;align-items:center;flex-direction:row}
+  .public-brand{font-size:19px;gap:9px;white-space:nowrap}
+  .public-brand .brand-icon{width:36px;height:36px}
+  .public-actions{width:auto;flex:1;justify-content:flex-end;gap:5px}
+  .public-actions .public-link:nth-child(-n+3){display:none}
+  .public-actions .public-link{padding:8px 7px;font-size:10px;white-space:nowrap}
+  .public-actions .primary{padding:9px 11px;font-size:10px;white-space:nowrap}
+  .public-wrap{padding:10px 12px 44px}
+  .public-hero{display:block;min-height:0;padding:28px 20px;border-radius:24px;overflow:hidden}
+  .public-hero h1{font-size:clamp(37px,11vw,49px);line-height:1.04;letter-spacing:-2.5px;margin:16px 0 13px}
+  .public-hero p{font-size:13px;line-height:1.65}
+  .public-hero .eyebrow{max-width:100%;font-size:8px;line-height:1.35;white-space:normal}
+  .hero-buttons{display:grid;grid-template-columns:1fr;gap:9px;margin-top:21px}
+  .hero-buttons>button,.hero-buttons>.primary{width:100%;min-width:0;padding:13px 12px}
+  .public-hero .hero-side{display:none!important}
+  .public-foot{display:grid;grid-template-columns:1fr;margin:15px 0 0;gap:10px}
+  .public-feature{padding:15px}
+  .landing-section{padding-top:48px}
+  .feature-grid,.how-grid{grid-template-columns:1fr}
+  .hospital-strip{padding:16px;overflow-wrap:anywhere}
+  .public-auth{width:calc(100% - 24px);margin:20px 12px 38px;padding:20px;border-radius:18px}
+}
+@media(max-width:380px){
+  .public-header{padding:10px 11px}
+  .public-brand{font-size:17px}
+  .public-brand .brand-icon{width:33px;height:33px}
+  .public-actions .public-link{font-size:9px;padding:7px 5px}
+  .public-actions .primary{font-size:9px;padding:8px 8px}
+  .public-hero{padding:25px 17px}
+}
 </style></head>
 <body>
 <section class="public-screen" id="publicRoot">
