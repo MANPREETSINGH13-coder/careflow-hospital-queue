@@ -48,7 +48,12 @@ body{background:radial-gradient(ellipse at 15% 8%,#e7f0e6 0,transparent 34%),#f4
 @media(max-width:460px){.app .grid4{grid-template-columns:1fr 1fr}.app main{padding-left:10px;padding-right:10px}.app .topbar{align-items:flex-start}.app .crumb{padding-top:7px}.app .demo-tag{font-size:8px;padding:6px 8px}.app .date{display:none}.app .top-right{flex-wrap:wrap;justify-content:flex-end}.app .primary,.app .secondary,.app .danger{padding:9px 11px}.app .steps{grid-template-columns:1fr 1fr}.app .appt-card{align-items:flex-start;flex-direction:column}.app .appt-side{text-align:left}.app .modal-actions{flex-direction:column-reverse}.app .modal-actions button{width:100%}}
 @media(prefers-reduced-motion:reduce){.app .nav button,.app .primary,.app .secondary,.app .card,.feature-card{transition:none}}
 </style>
-</head>
+<style>
+:root{color-scheme:light}
+.public-auth .primary,.public-auth button[type=submit],.public-actions .primary{background:#176b57!important;border-color:#176b57!important;color:#fff!important;box-shadow:0 8px 20px #176b5726!important}
+.public-auth .primary:hover,.public-auth button[type=submit]:hover,.public-actions .primary:hover{background:#105541!important;border-color:#105541!important}
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,input:-webkit-autofill:active,input:autofill{ -webkit-box-shadow:0 0 0 1000px #f3f8ef inset!important;box-shadow:0 0 0 1000px #f3f8ef inset!important;-webkit-text-fill-color:#183a30!important;caret-color:#183a30!important }
+</style></head>
 <body>
 <section class="public-screen" id="publicRoot">
   <header class="public-header"><div class="public-brand"><span class="brand-icon">✳</span><span>CareFlow</span></div><nav class="public-actions"><button class="public-link" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Features</button><button class="public-link" onclick="document.getElementById('hospitals').scrollIntoView({behavior:'smooth'})">Hospitals</button><button class="public-link" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button><button class="public-link" data-public="patientLogin">Patient login</button><button class="public-link" data-public="adminLogin">Admin & staff login</button><button class="primary" data-public="register">Register</button></nav></header>
