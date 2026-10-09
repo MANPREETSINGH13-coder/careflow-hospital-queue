@@ -8,7 +8,9 @@
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "connect-mongo": "^5.1.0",
     "dotenv": "^16.4.7",
@@ -16,6 +18,7 @@
     "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
-    "mongodb": "^6.17.0"
+    "mongodb": "^6.17.0",
+    "motion": "^14.0.0"
   }
 }
