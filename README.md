@@ -18,7 +18,7 @@ The service creates MongoDB indexes and creates the initial Super Admin on first
 
 ## Deploy on Render
 
-`render.yaml` defines the Node web service and `/api/health` check. Set `MONGODB_URI` to the Atlas connection string, `MONGODB_DB` (or existing `MONGODB_DATABASE`) to `careflow`, and provide `SUPER_ADMIN_EMAIL` and `SUPER_ADMIN_PASSWORD` in the Render service environment. Render generates `SESSION_SECRET` from the Blueprint. Keep database credentials and admin passwords out of source control. Atlas Network Access must allow the Render service to reach the cluster; use the narrowest practical network rule.
+`render.yaml` defines the Node web service and `/api/health` check. Set `MONGODB_URI` to the Atlas connection string, `MONGODB_DB` (or existing `MONGODB_DATABASE`) to `careflow`, and provide `SUPER_ADMIN_EMAIL` and `SUPER_ADMIN_PASSWORD` in the Render service environment. Add `OPENAI_API_KEY` there to enable optional patient AI voice. Render generates `SESSION_SECRET` from the Blueprint. Keep API keys, database credentials, and admin passwords out of source control. Atlas Network Access must allow the Render service to reach the cluster; use the narrowest practical network rule.
 
 Render web services bind to `0.0.0.0` and the supplied `PORT`. See the [Blueprint reference](https://render.com/docs/blueprint-spec), [web service guide](https://render.com/docs/web-services), and [environment variable guide](https://render.com/docs/configure-environment-variables).
 
@@ -45,6 +45,7 @@ Session cookies are HttpOnly, SameSite=Lax, and stored in MongoDB. Mutating brow
 | `GET` | `/api/doctor/appointments` | Doctor, assigned appointments |
 | `POST` | `/api/doctor/appointments/:id/actions` | Assigned doctor; approve, reject, start, complete, skip |
 | `POST` / `GET` | `/api/patient/appointments` | Patient creates and views own appointments |
+| `POST` | `/api/patient/voice/speech` | Signed-in patient; optional AI-generated speech audio |
 | `POST` | `/api/patient/appointments/:id/cancel` | Owning patient, before consultation starts |
 | `POST` | `/api/patient/appointments/:id/check-in` | Owning patient with an approved visit scheduled today |
 | `POST` | `/api/reception/walk-ins` | Hospital Admin or reception, own facility |
@@ -55,7 +56,7 @@ Session cookies are HttpOnly, SameSite=Lax, and stored in MongoDB. Mutating brow
 
 Queue estimates use the number of people ahead and the doctor's recorded average consultation time (12 minutes until enough visits are completed). Queue tokens are allocated transactionally. The patient dashboard reads appointments and live queue estimates from the API and refreshes them every 30 seconds while the dashboard is open.
 
-The patient dashboard also includes an optional Hindi voice queue assistant. Patients can request a spoken ETA or opt into an alert when they are within a selected 5, 10, or 15 minute threshold, and a spoken notice when staff call their turn. Speech uses the browser's built-in speech synthesis on the patient's device; it is not a generative AI model, requires the page to remain open, and may depend on Hindi voice support in the browser. Voice preference is stored in that browser's local storage. Use headphones in shared spaces. Wait times are estimates and can change as the queue moves.
+The patient dashboard includes a Hindi voice queue assistant. Patients can request a spoken ETA or opt into alerts near their turn. Browser speech runs on the patient's device. Patients may separately opt into AI-generated speech; this sends only the text of the spoken update (which can include the queue token, doctor, and wait estimate) to OpenAI and returns audio without caching it. The interface discloses this before opt-in. AI voice requires `OPENAI_API_KEY` on the server. OpenAI TTS voices are optimized for English, so Hindi pronunciation may vary. Voice settings are stored in the patient's browser. Use headphones in shared spaces. Wait times are estimates and can change as the queue moves.
 
 ## Current frontend scope
 
