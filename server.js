@@ -486,46 +486,6 @@ app.get('/api/patient/appointments', requireAuth, allowRoles('patient'), async (
   } catch (error) { next(error); }
 });
 
-const speechUsage = new Map();
-app.post('/api/patient/voice/speech', requireAuth, allowRoles('patient'), async (req, res, next) => {
-  try {
-    if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'AI voice is not configured yet. Add OPENAI_API_KEY in Render environment variables.' });
-    if (req.body?.consent !== true) throw fail(400, 'Turn on AI voice in your patient dashboard before generating speech.');
-    const text = clean(req.body?.text, 1200);
-    if (!text || !/[\u0900-\u097f]/.test(text)) throw fail(400, 'Send a Hindi queue update to speak.');
-
-    const accountId = String(req.user._id);
-    const now = Date.now();
-    let quota = speechUsage.get(accountId);
-    if (!quota || now - quota.startedAt >= 60 * 60 * 1000) {
-      quota = { startedAt: now, count: 0 };
-      speechUsage.set(accountId, quota);
-    }
-    if (quota.count >= 30) throw fail(429, 'AI voice limit reached for this hour. Try again later.');
-    quota.count += 1;
-    if (speechUsage.size > 2000) {
-      for (const [key, value] of speechUsage) if (now - value.startedAt >= 60 * 60 * 1000) speechUsage.delete(key);
-    }
-
-    const response = await fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini-tts', voice: 'shimmer', input: text, response_format: 'mp3',
-        instructions: 'Speak the Hindi text clearly and warmly, at a calm pace, in a feminine-sounding voice. Use simple conversational Hindi. Do not add or omit any information.'
-      }),
-      signal: AbortSignal.timeout(25_000)
-    });
-    if (!response.ok) {
-      console.error('OpenAI speech request failed with status:', response.status);
-      return res.status(response.status === 429 ? 503 : 502).json({ error: 'AI voice could not be generated. Please try again shortly.' });
-    }
-    const audio = Buffer.from(await response.arrayBuffer());
-    if (!audio.length || audio.length > 5_000_000) throw fail(502, 'AI voice audio was empty or too large.');
-    res.set({ 'Content-Type': 'audio/mpeg', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }).send(audio);
-  } catch (error) { next(error); }
-});
-
 app.post('/api/patient/appointments/:id/cancel', requireAuth, allowRoles('patient'), async (req, res, next) => {
   try {
     const profile = await collections.patientProfiles.findOne({ userId: req.user._id });
