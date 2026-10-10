@@ -254,6 +254,12 @@ app.post('/api/auth/accept-invitation', loginAttempts, async (req, res, next) =>
       const user = {
         fullName: invite.fullName, email: invite.email, phone: null, role: invite.role,
         hospitalId: invite.hospitalId, departmentId: invite.departmentId || null,
+        ...(invite.role === 'doctor' ? {
+          experienceYears: invite.experienceYears || 0,
+          qualification: invite.qualification || '',
+          specialty: invite.specialty || '',
+          hometown: invite.hometown || ''
+        } : {}),
         passwordHash: await passwordHash(password), active: true, createdAt: new Date()
       };
       const result = await collections.users.insertOne(user, { session });
@@ -294,7 +300,14 @@ app.get('/api/hospitals/:hospitalId/providers', async (req, res, next) => {
       { $match: { hospitalId, role: 'doctor', active: true, departmentId: { $ne: null } } },
       { $lookup: { from: 'departments', localField: 'departmentId', foreignField: '_id', as: 'department' } },
       { $unwind: '$department' }, { $match: { 'department.active': true } },
-      { $project: { _id: 1, name: '$fullName', departmentId: { $toString: '$department._id' }, department: '$department.name' } },
+      { $lookup: { from: 'hospitals', localField: 'hospitalId', foreignField: '_id', as: 'hospital' } },
+      { $unwind: '$hospital' },
+      { $project: {
+        _id: 1, name: '$fullName', departmentId: { $toString: '$department._id' }, department: '$department.name',
+        experienceYears: { $ifNull: ['$experienceYears', 0] }, qualification: { $ifNull: ['$qualification', ''] },
+        specialty: { $ifNull: ['$specialty', ''] }, hometown: { $ifNull: ['$hometown', ''] },
+        hospitalName: '$hospital.name', hospitalDistrict: '$hospital.district', hospitalAddress: '$hospital.address'
+      } },
       { $sort: { department: 1, name: 1 } }
     ]).toArray();
     res.json({ providers: providers.map(p => ({ ...p, id: String(p._id), _id: undefined })) });
@@ -377,6 +390,8 @@ app.post('/api/hospital/staff-invitations', requireAuth, requireHospital, allowR
   try {
     const name = clean(req.body.name, 120), email = emailOf(req.body.email), role = clean(req.body.role, 30);
     const departmentId = req.body.departmentId ? idOf(req.body.departmentId) : null;
+    const experienceYears = Math.max(0, Math.min(70, Number.parseInt(req.body.experienceYears, 10) || 0));
+    const qualification = clean(req.body.qualification, 160), specialty = clean(req.body.specialty, 200), hometown = clean(req.body.hometown, 120);
     if (name.length < 2 || !emailOK(email) || !['doctor', 'nurse', 'reception'].includes(role)) throw fail(400, 'Enter a valid staff name, email, and role.');
     if (role === 'doctor' && !departmentId) throw fail(400, 'Doctors must be assigned to a department.');
     if (departmentId && !await collections.departments.findOne({ _id: departmentId, hospitalId: req.user.hospitalId, active: true })) throw fail(400, 'Choose an active department at your hospital.');
@@ -384,6 +399,7 @@ app.post('/api/hospital/staff-invitations', requireAuth, requireHospital, allowR
     const token = newToken();
     await collections.invitations.insertOne({
       hospitalId: req.user.hospitalId, departmentId, email, fullName: name, role,
+      ...(role === 'doctor' ? { experienceYears, qualification, specialty, hometown } : {}),
       tokenHash: tokenDigest(token), invitedBy: req.user._id,
       expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000), acceptedAt: null, createdAt: new Date()
     });
@@ -394,7 +410,13 @@ app.post('/api/hospital/staff-invitations', requireAuth, requireHospital, allowR
 app.get('/api/hospital/staff', requireAuth, requireHospital, allowRoles('hospital_admin'), async (req, res, next) => {
   try {
     const staff = await collections.users.find({ hospitalId: req.user.hospitalId, role: { $in: ['doctor', 'nurse', 'reception'] } }, { projection: { passwordHash: 0 } }).sort({ role: 1, fullName: 1 }).toArray();
-    res.json({ staff: staff.map(u => ({ ...safeUser(u), active: u.active })) });
+    res.json({ staff: staff.map(u => ({
+      ...safeUser(u), active: u.active,
+      ...(u.role === 'doctor' ? {
+        experienceYears: u.experienceYears || 0, qualification: u.qualification || '',
+        specialty: u.specialty || '', hometown: u.hometown || ''
+      } : {})
+    })) });
   } catch (error) { next(error); }
 });
 
