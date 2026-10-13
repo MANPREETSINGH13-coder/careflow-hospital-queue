@@ -6,7 +6,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "data-detective": "node data-detective-server.js",
+    "data-detective:dev": "node --watch data-detective-server.js"
   },
   "engines": {
     "node": ">=20"
@@ -19,6 +21,7 @@
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "mongodb": "^6.17.0",
-    "motion": "^14.0.0"
+    "motion": "^14.0.0",
+    "openai": "^7.32.0"
   }
 }

@@ -42,7 +42,10 @@ app.use(helmet({
   },
   referrerPolicy: { policy: 'no-referrer' }
 }));
-app.use(express.json({ limit: '32kb', strict: true }));
+app.use((req, res, next) => {
+  const isDataDetective = req.path.startsWith('/api/data-detective/');
+  express.json({ limit: isDataDetective ? '2.1mb' : '32kb', strict: true })(req, res, next);
+});
 app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 600, standardHeaders: 'draft-8', legacyHeaders: false }));
 app.use((req, res, next) => {
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
@@ -186,6 +189,9 @@ app.get('/api/health', async (_req, res) => {
   try { await db.command({ ping: 1 }); res.json({ status: 'ok', database: 'connected' }); }
   catch { res.status(503).json({ status: 'unavailable', database: 'disconnected' }); }
 });
+
+const dataDetectiveRouter = require('./data-detective');
+app.use('/api/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), dataDetectiveRouter);
 
 app.post('/api/auth/register/patient', loginAttempts, async (req, res, next) => {
   try {
@@ -650,6 +656,8 @@ app.get('/api/super-admin/overview', requireAuth, allowRoles('super_admin'), asy
 });
 
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), (_req, res) => res.sendFile(path.join(__dirname, 'data-detective', 'index.html')));
+app.use('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), express.static(path.join(__dirname, 'data-detective'), { index: false, fallthrough: true }));
 app.get(/^\/api\//, (_req, res) => res.status(404).json({ error: 'API route not found.' }));
 app.use((req, res) => res.status(404).json({ error: 'Page not found.' }));
 app.use((error, _req, res, _next) => {

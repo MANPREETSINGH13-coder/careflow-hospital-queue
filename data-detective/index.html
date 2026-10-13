@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f8f5">
+  <meta name="description" content="Ask questions about a CSV and get evidence-backed answers, charts, and a report.">
+  <title>Data Detective — Make your data talk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/data-detective/styles.css">
+  <script src="/data-detective/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/data-detective" aria-label="Data Detective home"><span class="brand-mark">◒</span><span>data<span class="brand-light">detective</span></span><span class="beta">BETA</span></a>
+    <div class="top-actions"><span class="sandbox-status"><i></i> OpenAI-powered analysis</span><button id="newAnalysis" class="new-analysis"><span>＋</span> New analysis</button></div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <div class="workspace-label"><span>YOUR WORKSPACE</span><button aria-label="Workspace menu">···</button></div>
+      <div class="active-nav"><span class="nav-icon">▦</span> Data analysis <span class="nav-plus">＋</span></div>
+      <div class="side-divider"></div>
+      <div class="sidebar-prompt"><div class="prompt-orb">✳</div><p>Good questions make good discoveries.</p><span>Upload a CSV to start exploring.</span></div>
+      <div class="sidebar-bottom"><div class="privacy-icon">⌑</div><div><strong>External data processing</strong><span>CSV is sent to OpenAI for analysis. Remove identifiers before upload.</span></div></div>
+    </aside>
+
+    <section class="main-column">
+      <div class="welcome" id="welcome">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR DATA, UNDERSTOOD</div>
+        <h1>Every dataset has<br>a <em>story.</em></h1>
+        <p class="intro">Bring your CSV. Ask the question you can’t stop thinking about.<br>Let’s find out what the numbers are really saying.</p>
+
+        <div class="upload-card" id="dropZone">
+          <input id="fileInput" type="file" accept=".csv,text/csv" hidden>
+          <div class="upload-icon"><span>↑</span></div>
+          <div class="upload-copy"><strong>Drop your CSV right here</strong><span>or <button id="browseFiles" class="text-button">browse files</button> from your computer</span></div>
+          <span class="file-limit">CSV · UP TO 1.5 MB</span>
+          <div id="selectedFile" class="selected-file" hidden></div>
+        </div>
+        <div class="sample-row"><span class="sample-glyph">✳</span><span>Just looking around?</span><button id="loadSample" class="sample-link">Try the sample dataset <span>↗</span></button></div>
+
+        <div class="question-card">
+          <div class="question-label"><span class="sparkle">✳</span> WHAT ARE YOU CURIOUS ABOUT?</div>
+          <textarea id="questionInput" rows="2" placeholder="e.g. Which product is growing the fastest, and why?" aria-label="Ask a question about your CSV"></textarea>
+          <label class="external-consent"><input id="externalConsent" type="checkbox"><span>I understand this CSV and my question will be sent to OpenAI for analysis. I have permission to share it and removed patient identifiers.</span></label>
+          <div class="question-footer"><span><kbd>↵</kbd> to analyze</span><button id="analyzeButton" class="send-button" disabled>Analyze data <span>↗</span></button></div>
+        </div>
+        <div class="suggestions"><span>TRY ASKING</span><button data-question="What are the most surprising patterns in this data?">Uncover surprising patterns <span>↗</span></button><button data-question="Are there any outliers or data quality issues I should know about?">Spot outliers <span>↗</span></button></div>
+      </div>
+
+      <section id="conversation" class="conversation" hidden>
+        <div class="conversation-heading"><div><div class="eyebrow"><span class="eyebrow-dot"></span> INVESTIGATION IN PROGRESS</div><h1>Let’s follow the <em>evidence.</em></h1></div><div id="datasetBadge" class="dataset-badge"></div></div>
+        <div id="thread" class="thread" aria-live="polite"></div>
+        <div id="progressPanel" class="progress-panel" hidden><div class="progress-top"><span class="progress-spinner"></span><strong id="progressTitle">Reading the evidence</strong><span class="progress-live">LIVE</span></div><div id="progressSteps" class="progress-steps"></div></div>
+        <div class="followup-card"><textarea id="followupInput" rows="2" placeholder="Ask a follow-up about this dataset…" aria-label="Ask a follow-up question"></textarea><div class="question-footer"><span>Your analysis stays in this session</span><button id="followupButton" class="send-button" disabled>Ask follow-up <span>↗</span></button></div></div>
+        <div class="results-footer"><span>Analysis can be imperfect. Check the caveats before acting.</span><button id="downloadReport" class="download-button" disabled>↓ Download report</button></div>
+      </section>
+      <footer class="page-footer"><span>Built for curious minds.</span><span>Powered by OpenAI Agents <span class="footer-star">✳</span></span></footer>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
