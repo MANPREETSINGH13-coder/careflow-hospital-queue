@@ -190,6 +190,11 @@ app.get('/api/health', async (_req, res) => {
   catch { res.status(503).json({ status: 'unavailable', database: 'disconnected' }); }
 });
 
+app.get('/vendor/motion.js', (_req, res, next) => {
+  res.sendFile(path.join(__dirname, 'node_modules', 'motion', 'dist', 'motion.js'), error => error && next(error));
+});
+app.use('/assets', express.static(path.join(__dirname, 'assets'), { maxAge: production ? '1h' : 0, fallthrough: true }));
+
 const dataDetectiveRouter = require('./data-detective');
 app.use('/api/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), dataDetectiveRouter);
 
@@ -656,6 +661,7 @@ app.get('/api/super-admin/overview', requireAuth, allowRoles('super_admin'), asy
 });
 
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/careflow-motion.js', (_req, res) => res.sendFile(path.join(__dirname, 'careflow-motion.js')));
 app.get('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), (_req, res) => res.sendFile(path.join(__dirname, 'data-detective', 'index.html')));
 app.use('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), express.static(path.join(__dirname, 'data-detective'), { index: false, fallthrough: true }));
 app.get(/^\/api\//, (_req, res) => res.status(404).json({ error: 'API route not found.' }));
