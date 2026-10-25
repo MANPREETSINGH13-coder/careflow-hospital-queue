@@ -186,6 +186,7 @@ function patientView(appointment, patient, hospital, department, doctor, peopleA
 }
 
 app.get('/api/health', async (_req, res) => {
+  res.set('Access-Control-Allow-Origin', 'https://manpreetsingh13-coder.github.io');
   try { await db.command({ ping: 1 }); res.json({ status: 'ok', database: 'connected' }); }
   catch { res.status(503).json({ status: 'unavailable', database: 'disconnected' }); }
 });
