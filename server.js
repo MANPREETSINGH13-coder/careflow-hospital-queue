@@ -524,7 +524,7 @@ app.post('/api/patient/appointments/:id/cancel', requireAuth, allowRoles('patien
   try {
     const profile = await collections.patientProfiles.findOne({ userId: req.user._id });
     const result = await collections.appointments.updateOne(
-      { _id: idOf(req.params.id), patientProfileId: profile?._id, appointmentStatus: { $in: ['requested', 'approved'] }, queueStatus: { $in: ['not_arrived', 'waiting'] } },
+      { _id: idOf(req.params.id), patientProfileId: profile?._id, appointmentStatus: { $in: ['requested', 'approved'] }, queueStatus: { $in: ['not_arrived', 'waiting', 'called', 'skipped'] }, startedAt: { $exists: false } },
       { $set: { appointmentStatus: 'cancelled', queueStatus: 'cancelled', updatedAt: new Date() } }
     );
     if (!result.modifiedCount) throw fail(409, 'This appointment cannot be cancelled. Contact the hospital if you need help.');
@@ -627,7 +627,7 @@ app.post('/api/doctor/appointments/:id/actions', requireAuth, allowRoles('doctor
         await collections.appointments.updateOne({ _id: a._id }, { $set: { appointmentStatus: 'rejected', queueStatus: 'cancelled', updatedAt: now } }, { session });
         response = { id: String(a._id), appointmentStatus: 'rejected', queueStatus: 'cancelled' };
       } else if (action === 'start') {
-        if (a.appointmentStatus !== 'approved' || !['waiting', 'called'].includes(a.queueStatus)) throw fail(409, 'Only an approved patient in the active queue can start a consultation.');
+        if (a.appointmentStatus !== 'approved' || !['waiting', 'called', 'skipped'].includes(a.queueStatus) || a.startedAt) throw fail(409, 'Only an approved patient who has not started a consultation can start a visit.');
         await collections.appointments.updateOne({ _id: a._id }, { $set: { queueStatus: 'serving', startedAt: now, updatedAt: now } }, { session });
         response = { id: String(a._id), appointmentStatus: a.appointmentStatus, queueStatus: 'serving', token: a.tokenLabel };
       } else if (action === 'complete') {
@@ -663,7 +663,8 @@ app.get('/api/super-admin/overview', requireAuth, allowRoles('super_admin'), asy
 
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/careflow-motion.js', (_req, res) => res.sendFile(path.join(__dirname, 'careflow-motion.js')));
-app.get('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), (_req, res) => res.sendFile(path.join(__dirname, 'data-detective', 'index.html')));
+app.get('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), (req, res) => res.redirect(308, `/data-detective/${req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''}`));
+app.get('/data-detective/', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), (_req, res) => res.sendFile(path.join(__dirname, 'data-detective', 'index.html')));
 app.use('/data-detective', requireAuth, allowRoles('super_admin', 'hospital_admin', 'doctor'), express.static(path.join(__dirname, 'data-detective'), { index: false, fallthrough: true }));
 app.get(/^\/api\//, (_req, res) => res.status(404).json({ error: 'API route not found.' }));
 app.use((req, res) => res.status(404).json({ error: 'Page not found.' }));

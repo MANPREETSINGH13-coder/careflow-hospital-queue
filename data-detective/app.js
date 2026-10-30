@@ -22,7 +22,13 @@
   }
   $('#browseFiles').addEventListener('click', () => input.click());
   input.addEventListener('change', () => readFile(input.files[0]));
-  $('#loadSample').addEventListener('click', () => setFile(new File([sampleCsv], 'sample-growth-data.csv', { type: 'text/csv' }), sampleCsv));
+  $('#loadSample').addEventListener('click', () => {
+    setFile(new File([sampleCsv], 'sample-growth-data.csv', { type: 'text/csv' }), sampleCsv);
+    question.value = 'Which product and region show the strongest revenue growth?';
+    analyze.disabled = !externalConsent.checked;
+    question.focus();
+    toast('Sample loaded. Confirm the data-sharing notice, then analyze it.');
+  });
   const drop = $('#dropZone');
   ['dragenter', 'dragover'].forEach(name => drop.addEventListener(name, e => { e.preventDefault(); drop.classList.add('dragover'); }));
   ['dragleave', 'drop'].forEach(name => drop.addEventListener(name, e => { e.preventDefault(); drop.classList.remove('dragover'); }));
@@ -90,6 +96,7 @@
   }
   async function sendFollowup() {
     const ask = followup.value.trim(); if (!ask || !state.sessionId || state.busy) return;
+    state.reportMarkdown = '';
     followup.value = ''; addMessage('user', ask); const answer = addMessage('assistant', ''); state.busy = true; askFollowup.disabled = true; showProgress();
     try {
       const response = await fetch(`/api/data-detective/${encodeURIComponent(state.sessionId)}/follow-up`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: ask }) });

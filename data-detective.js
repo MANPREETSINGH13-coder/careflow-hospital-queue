@@ -108,6 +108,8 @@ router.post('/:sessionId/follow-up', analysisLimiter, async (req, res, next) => 
         if (event.type === 'agent.session.turn.completed' && !event.turn?.subagent_id) { completed = true; break; }
       }
       if (completed) {
+        const finalResult = await stream.finalResult();
+        if (finalResult) await emitArtifacts(res, api, finalResult, sessionId);
         if (!outputText) {
           const page = await api.beta.agents.sessions.items.list(sessionId, { order: 'desc', limit: 30 });
           const message = (page.data || []).find(item => item.type === 'message' && item.role === 'assistant');
