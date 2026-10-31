@@ -107,3 +107,71 @@ body {
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; }
 }
+
+/* CareFlow editorial workspace companion theme */
+:root {
+  color-scheme:light;
+  --paper:#F8F5EF; --ink:#27342F; --muted:#788078; --line:#E9E2D8;
+  --green:#315B4A; --lime:#E7EEE4; --orange:#BF694F;
+}
+html { background:#F8F5EF; }
+body { color:#27342F;background:radial-gradient(ellipse at 75% -5%,#F0E8DC,transparent 36rem),#F8F5EF; }
+.topbar { color:#27342F;background:#FBF9F5F2;border-color:#E9E2D8;backdrop-filter:blur(14px); }
+.brand,.brand-light { color:#27342F; }
+.brand-mark { color:#fff;background:#315B4A;border-radius:8px; }
+.beta,.active-nav,.privacy-icon,.prompt-orb { color:#315B4A;background:#EAF0E8;border:1px solid #DCE5D9;border-radius:7px; }
+.sandbox-status { color:#718078; }
+.sandbox-status i,.eyebrow-dot { background:#729879;box-shadow:0 0 0 4px #72987920; }
+.new-analysis { color:#315B4A;background:#FFFEFB;border-color:#E5DFD5;border-radius:8px; }
+.new-analysis:hover { background:#EFF2EA;border-color:#CCD9CB; }
+.layout { grid-template-columns:252px minmax(0,1fr); }
+.sidebar { color:#33423A;background:#F0ECE4;border-color:#E4DDD2; }
+.workspace-label,.workspace-label button { color:#858A7F; }
+.active-nav { color:#315B4A;background:#E1E8DD;border:0;box-shadow:inset 3px 0 #BF694F; }
+.nav-plus { color:#315B4A; }
+.side-divider { background:#E3DCD1; }
+.sidebar-prompt { color:#fff;background:#315B4A;border-color:#315B4A;border-radius:9px; }
+.sidebar-prompt p,.sidebar-bottom strong { color:#fff; }
+.sidebar-prompt>span,.sidebar-bottom span { color:#D1DFD0; }
+.sidebar-bottom { border-color:#DDD6CA; }
+.main-column { background:transparent; }
+.eyebrow,.question-label,.suggestions>span { color:#BF694F; }
+.welcome h1,.conversation h1 { color:#27342F;letter-spacing:-.055em; }
+.welcome h1 em,.conversation h1 em { color:#315B4A; }
+.intro { color:#788078; }
+.upload-card { border:1px dashed #CFCABD;border-radius:9px;background:#FFFEFB;box-shadow:none; }
+.upload-card:hover,.upload-card.dragover { border-color:#729879;background:#F2F5EE; }
+.upload-icon { color:#315B4A;background:#EAF0E8;border:0;border-radius:8px; }
+.upload-copy span,.file-limit,.sample-row { color:#788078; }
+.selected-file { color:#27342F; }
+.text-button,.sample-link,.sparkle,.sample-glyph { color:#315B4A; }
+.question-card,.followup-card,.progress-panel { color:#27342F;border:1px solid #E9E2D8;border-radius:9px;background:#FFFEFB;box-shadow:0 9px 26px #3b392d09; }
+.question-card textarea,.followup-card textarea { color:#27342F; }
+.question-card textarea::placeholder,.followup-card textarea::placeholder { color:#A3A59B; }
+.external-consent { color:#788078; }
+.external-consent input { accent-color:#315B4A; }
+.question-footer { border-color:#E9E2D8;color:#788078; }
+.question-footer kbd { color:#315B4A;background:#F0F2EA;border-color:#E0E3D8;border-radius:4px; }
+.send-button { color:#fff;background:#BF694F;border-color:#BF694F;border-radius:8px; }
+.send-button:hover:not(:disabled) { background:#A9543D; }
+.send-button:disabled { color:#92958D;background:#E8E5DD;border-color:#E8E5DD; }
+.suggestions button,.download-button { color:#536259;background:#FFFEFB;border-color:#E5DFD5;border-radius:7px; }
+.suggestions button:hover,.download-button:hover:not(:disabled) { color:#315B4A;background:#EFF2EA;border-color:#CCD9CB; }
+.page-footer { color:#8A8D83;border-color:#E9E2D8; }
+.footer-star { color:#BF694F; }
+.dataset-badge { color:#315B4A;background:#EAF0E8;border-color:#DCE5D9;border-radius:5px; }
+.message { border-radius:8px;box-shadow:none; }
+.message.user { color:#315B4A;background:#EAF0E8;border:1px solid #DCE5D9; }
+.message.assistant { color:#27342F;background:#FFFEFB;border:1px solid #E9E2D8; }
+.message.assistant:before { color:#BF694F; }
+.progress-top { color:#27342F; }
+.progress-spinner { border-color:#E5DFD5;border-top-color:#315B4A; }
+.progress-live { color:#315B4A;background:#EAF0E8; }
+.progress-steps,.progress-step.active { color:#788078; }
+.progress-step:before,.progress-step.done:before { color:#729879; }
+.results-footer { color:#788078; }
+.toast { color:#27342F;background:#FFFEFB;border-color:#E9E2D8;box-shadow:0 14px 38px #27342f1b;border-radius:9px; }
+.analysis-error { color:#904A43;background:#FFF2EF;border-color:#EFDAD2; }
+.chart-preview { border-color:#E9E2D8;border-radius:9px; }
+.report-link { color:#315B4A; }
+
